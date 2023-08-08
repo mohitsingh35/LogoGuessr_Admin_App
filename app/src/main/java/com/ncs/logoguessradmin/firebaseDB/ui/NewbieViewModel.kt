@@ -1,5 +1,6 @@
 package com.ncs.logoguessradmin.firebaseDB.ui
 
+
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -13,15 +14,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RealtimeViewModel @Inject constructor
-    (private val repo: RealtimeRepository,val initialChildName:String):ViewModel(){
+class NewbieViewModel @Inject constructor
+    (private val repo: RealtimeRepository):ViewModel(){
     private val _res:MutableState<ItemState> = mutableStateOf(ItemState())
     val res:State<ItemState> = _res
     fun insert(items:RealTimeModelResponse.RealTimeItems,childName:String)=repo.insert(items,childName)
 
     private val _updateRes:MutableState<RealTimeModelResponse> = mutableStateOf(
         RealTimeModelResponse(item = RealTimeModelResponse.RealTimeItems(),
-            )
+        )
     )
     val updateRes:State<RealTimeModelResponse> = _updateRes
 
@@ -29,7 +30,7 @@ class RealtimeViewModel @Inject constructor
     fun setData(data:RealTimeModelResponse){
         _updateRes.value=data
     }
-    var childName:String=initialChildName
+    val childName= "Newbie"
     init {
         viewModelScope.launch {
             repo.getItems(childName).collect{
@@ -58,8 +59,3 @@ class RealtimeViewModel @Inject constructor
 
 }
 
-data class ItemState(
-    val item:List<RealTimeModelResponse> = emptyList(),
-    val error:String = "",
-    val isLoading:Boolean=false
-)
