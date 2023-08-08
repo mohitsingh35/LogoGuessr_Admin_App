@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ncs.logoguessradmin.firebaseDB.RealTimeModelResponse
 import com.ncs.logoguessradmin.utils.ResultState
@@ -42,8 +43,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RealtimeScreen(isInsert: MutableState<Boolean>,
-                   viewModel: RealtimeViewModel = hiltViewModel()
-                   ){
+                   childName:String,
+                   viewModel: RealtimeViewModel = hiltViewModel()) {
+
     val scope= rememberCoroutineScope()
     val context= LocalContext.current
     val isDialog= remember {
@@ -74,7 +76,7 @@ fun RealtimeScreen(isInsert: MutableState<Boolean>,
             Button(onClick = { scope.launch(Dispatchers.Main) {
                 viewModel.insert(RealTimeModelResponse.RealTimeItems
                     (listOf(option1.value,option2.value,option3.value,option4.value),
-                    answer.value)).collect{
+                    answer.value),childName).collect{
                     when(it){
                         is ResultState.Success->{
                             context.showMsg(
@@ -124,7 +126,7 @@ fun RealtimeScreen(isInsert: MutableState<Boolean>,
         )
     }
     if (isUpdate.value){
-        update(isUpdate = isUpdate, itemState = viewModel.updateRes.value , viewModel = viewModel )
+        update(isUpdate = isUpdate, itemState = viewModel.updateRes.value , viewModel = viewModel,childName)
     }
 
     if(res.item.isNotEmpty()){
@@ -138,7 +140,7 @@ fun RealtimeScreen(isInsert: MutableState<Boolean>,
                 }){
                     scope.launch(Dispatchers.Main) {
                         res.key?.let {
-                            viewModel.delete(it).collect {
+                            viewModel.delete(it,childName).collect {
                                 when (it) {
                                     is ResultState.Success -> {
                                         context.showMsg(
@@ -154,7 +156,6 @@ fun RealtimeScreen(isInsert: MutableState<Boolean>,
                                     ResultState.Loading -> {
                                     }
                                 }
-
                             }
                         }
                     }
@@ -188,10 +189,10 @@ fun EachRow( itemState: RealTimeModelResponse.RealTimeItems,
             .padding(20.dp)){
                Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
                    Column {
-                       itemState.options?.get(0)?.let { Text(text = it) }
-                       itemState.options?.get(1)?.let { Text(text = it) }
-                       itemState.options?.get(2)?.let { Text(text = it) }
-                       itemState.options?.get(3)?.let { Text(text = it) }
+                       itemState.options?.get(0)?.let { Text(text = "1: ${it}") }
+                       itemState.options?.get(1)?.let { Text(text = "2: ${it}") }
+                       itemState.options?.get(2)?.let { Text(text = "3: ${it}") }
+                       itemState.options?.get(3)?.let { Text(text = "4: ${it}") }
                        Text(text = "Answer : ${itemState.answer}")
                    }
                    IconButton(onClick = { onDelete() }) {
@@ -207,7 +208,8 @@ fun EachRow( itemState: RealTimeModelResponse.RealTimeItems,
 fun update(
     isUpdate:MutableState<Boolean>,
     itemState: RealTimeModelResponse,
-    viewModel: RealtimeViewModel
+    viewModel: RealtimeViewModel,
+    childName: String
 
 ){
     val option1= remember {
@@ -234,7 +236,7 @@ fun update(
                     RealTimeModelResponse(item = RealTimeModelResponse.RealTimeItems(
                         listOf(option1.value,option2.value,option3.value,option4.value),
                         answer.value
-                    ),key = itemState.key)
+                    ),key = itemState.key),childName
                 ).collect{
                     when(it){
                         is ResultState.Success->{
@@ -254,10 +256,14 @@ fun update(
                     }
                 }
             }}) {
-                Text(text = "Save")
+                Text(text = "Update")
             }
         }, text = {
             Column {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
+                    Text(text = "Update", fontSize = 20.sp)
+                }
+                Spacer(modifier = Modifier.height(20.dp))
                 option1.value?.let {
                     TextField(value = it, onValueChange ={option1.value=it}, label = { Text(
                         text = "Option 1"

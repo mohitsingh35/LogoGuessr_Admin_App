@@ -14,10 +14,11 @@ import javax.inject.Inject
 class RealtimeDBRepository @Inject constructor(
     private val db:DatabaseReference
 ):RealtimeRepository {
-    override fun insert(item: RealTimeModelResponse.RealTimeItems): Flow<ResultState<String>> =
+    override fun insert(item: RealTimeModelResponse.RealTimeItems,childName:String): Flow<ResultState<String>> =
         callbackFlow{
             trySend(ResultState.Loading)
-            db.push().setValue(
+
+            db.child(childName).push().setValue(
                 item
             ).addOnCompleteListener {
                 if(it.isSuccessful)
@@ -31,7 +32,7 @@ class RealtimeDBRepository @Inject constructor(
 
     }
 
-    override fun getItems(): Flow<ResultState<List<RealTimeModelResponse>>> = callbackFlow{
+    override fun getItems(childName: String): Flow<ResultState<List<RealTimeModelResponse>>> = callbackFlow{
         trySend(ResultState.Loading)
 
         val valueEvent=object :ValueEventListener{
@@ -50,16 +51,16 @@ class RealtimeDBRepository @Inject constructor(
             }
 
         }
-        db.addValueEventListener(valueEvent)
+        db.child(childName).addValueEventListener(valueEvent)
         awaitClose{
-            db.removeEventListener(valueEvent)
+            db.child(childName).removeEventListener(valueEvent)
             close()
         }
     }
 
-    override fun delete(key: String): Flow<ResultState<String>> = callbackFlow{
+    override fun delete(key: String,childName:String): Flow<ResultState<String>> = callbackFlow{
         trySend(ResultState.Loading)
-        db.child(key).removeValue()
+        db.child(childName).child(key).removeValue()
             .addOnCompleteListener{
                 trySend(ResultState.Success("item Deleted"))
             }
@@ -71,13 +72,13 @@ class RealtimeDBRepository @Inject constructor(
         }
     }
 
-    override fun update(res: RealTimeModelResponse): Flow<ResultState<String>> = callbackFlow {
+    override fun update(res: RealTimeModelResponse,childName:String): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
         val map=HashMap<String,Any>()
         map["options"]=res.item?.options!!
         map["answer"]=res.item.answer!!
 
-        db.child(res.key!!).updateChildren(
+        db.child(childName).child(res.key!!).updateChildren(
             map
         ).addOnCompleteListener{
             trySend(ResultState.Success("Updated Successfully"))

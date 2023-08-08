@@ -6,16 +6,16 @@ import kotlinx.coroutines.flow.Flow
 
 interface RealtimeRepository {
     fun insert(
-        item:RealTimeModelResponse.RealTimeItems
+        item:RealTimeModelResponse.RealTimeItems,childName:String
     ): Flow<ResultState<String>>
 
-    fun getItems():Flow<ResultState<List<RealTimeModelResponse>>>
+    fun getItems(childName: String):Flow<ResultState<List<RealTimeModelResponse>>>
 
     fun delete(
-        key:String
+        key:String,childName:String
     ):Flow<ResultState<String>>
 
     fun update(
-        res:RealTimeModelResponse
+        res:RealTimeModelResponse,childName:String
     ):Flow<ResultState<String>>
 }

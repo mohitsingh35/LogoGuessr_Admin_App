@@ -14,10 +14,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RealtimeViewModel @Inject constructor
-    (private val repo:RealtimeRepository):ViewModel(){
+    (private val repo: RealtimeRepository):ViewModel(){
     private val _res:MutableState<ItemState> = mutableStateOf(ItemState())
     val res:State<ItemState> = _res
-    fun insert(items:RealTimeModelResponse.RealTimeItems)=repo.insert(items)
+    fun insert(items:RealTimeModelResponse.RealTimeItems,childName:String)=repo.insert(items,childName)
 
     private val _updateRes:MutableState<RealTimeModelResponse> = mutableStateOf(
         RealTimeModelResponse(item = RealTimeModelResponse.RealTimeItems(),
@@ -25,13 +25,14 @@ class RealtimeViewModel @Inject constructor
     )
     val updateRes:State<RealTimeModelResponse> = _updateRes
 
+
     fun setData(data:RealTimeModelResponse){
         _updateRes.value=data
     }
+    val childName= "Newbie"
     init {
-
         viewModelScope.launch {
-            repo.getItems().collect{
+            repo.getItems(childName).collect{
                 when(it){
                     is ResultState.Success->{
                         _res.value=ItemState(
@@ -48,16 +49,12 @@ class RealtimeViewModel @Inject constructor
                             isLoading = true
                         )
                     }
-
                 }
             }
-
         }
-
-
     }
-    fun delete(key:String)=repo.delete(key)
-    fun update(item:RealTimeModelResponse)=repo.update(item)
+    fun delete(key:String,childName:String)=repo.delete(key,childName)
+    fun update(item:RealTimeModelResponse,childName:String)=repo.update(item,childName)
 
 }
 
