@@ -1,12 +1,13 @@
 package com.ncs.logoguessradmin.repository
 
+import android.net.Uri
 import com.ncs.logoguessradmin.firebaseDB.RealTimeModelResponse
 import com.ncs.logoguessradmin.utils.ResultState
 import kotlinx.coroutines.flow.Flow
 
 interface RealtimeRepository {
     fun insert(
-        item:RealTimeModelResponse.RealTimeItems,childName:String
+        item:RealTimeModelResponse.RealTimeItems,childName:String,uri: Uri
     ): Flow<ResultState<String>>
 
     fun getItems(childName: String):Flow<ResultState<List<RealTimeModelResponse>>>

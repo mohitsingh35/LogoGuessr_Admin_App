@@ -2,12 +2,15 @@ package com.ncs.logoguessradmin.firebaseDB
 
 data class RealTimeModelResponse(
     val item:RealTimeItems?,
-    val key:String?=""
+    val key:String?="",
+
 ){
 
     data class RealTimeItems(
+
+        val answer:String?="",
+        val image:Map<String,String> = emptyMap(),
         val options: List<String?> = emptyList(),
-        val answer:String?=""
     )
 }
 

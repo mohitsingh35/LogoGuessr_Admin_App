@@ -1,6 +1,7 @@
 package com.ncs.logoguessradmin.firebaseDB.ui
 
 
+import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -18,7 +19,7 @@ class ModerateViewModel @Inject constructor
     (private val repo: RealtimeRepository):ViewModel(){
     private val _res:MutableState<ItemState> = mutableStateOf(ItemState())
     val res:State<ItemState> = _res
-    fun insert(items:RealTimeModelResponse.RealTimeItems,childName:String)=repo.insert(items,childName)
+    fun insert(items:RealTimeModelResponse.RealTimeItems,childName:String,uri: Uri)=repo.insert(items,childName,uri)
 
     private val _updateRes:MutableState<RealTimeModelResponse> = mutableStateOf(
         RealTimeModelResponse(item = RealTimeModelResponse.RealTimeItems(),

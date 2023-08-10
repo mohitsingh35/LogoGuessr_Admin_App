@@ -14,7 +14,7 @@ import javax.inject.Singleton
 object FirebaseModule {
     @Provides
     @Singleton
-    fun providesRealtimeDb():DatabaseReference=Firebase.database.reference.child("levels")
+    fun providesRealtimeDb():DatabaseReference=Firebase.database.reference.child("data")
 
 
 }
